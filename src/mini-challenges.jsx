@@ -45,6 +45,9 @@ const age = user.age;
 
 //---> Add your solution here
 const { user: { name, age } } = props;
+// Alternatively, to consider the case where the user object is not passed as a prop correctly:
+const { user } = props || {};
+const { name = 'Unknown', age = 0 } = user || {};
 
 // ------------------------------------
 // Identify issues and propose improvements
