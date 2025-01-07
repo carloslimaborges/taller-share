@@ -111,21 +111,30 @@ app.post('/reset-password', async (req, res) => {
 // 2. We don't want to disclose the data showed in lines 98, 99. It enables a brute force attack to gather users
 // 3. We set the error variable and leave it to the end to avoid the attacker measuring the time for the response,
 // if we fail early as we usually do to improve readability and performance, then this becomes an issue
+// 4. Testing strategies:
+//     Security Testing:
+//     Test for SQL injection and XSS vulnerabilities.
+//     Ensure rate - limiting prevents brute - force attacks.
+//     Test response times to prevent timing attacks.
+//     Functional Testing:
+//     Verify happy path: valid email, reset token, and password.
+//     Test invalid inputs: wrong reset token, malformed email.
+//     Performance Testing:
+//     Simulate high traffic to ensure stability under load.
 app.post('/reset-password', async (req, res) => {
-    let error = false;
-    const { email, oldPassword, newPassword } = req.body;
-    const user = await getUserByEmail(email);
-    if (!user) {
-        error = true;
-    }
-    if (!checkCurrentPassword(email, oldPassword)) {
-        error = true;
-    }
-    if (!error) {
-        user.password = newPassword;
+    const { email, resetToken, newPassword } = req.body;
+
+    try {
+        const user = await getUserByEmail(email);
+        if (!user || !verifyResetToken(user, resetToken)) {
+            return res.status(400).send('Invalid request');
+        }
+
+        user.password = hashPassword(newPassword);
         await saveUser(user);
         res.send('Password updated successfully');
-    } else {
-        res.status(400).send('Problem while changing password');
+    } catch (error) {
+        console.error('Password reset error:', error);
+        res.status(500).send('Internal Server Error');
     }
 });
