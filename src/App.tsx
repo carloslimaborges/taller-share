@@ -16,17 +16,12 @@ const PaymentDashboard: React.FC = () => {
   const [newAmount, setNewAmount] = useState<number | null>(null);
   const [result, setResult] = useState<string>('');
 
-  const transactionsMap = {};
-  for (let i = 0; i < transactions.length; ++i) {
-    transactionsMap[transactions[i].amount] = i;
-  }
-
   const handleCheckTransactions = () => {
     if (target === null) return;
 
     const seen: Record<number, number> = {};
 
-    for (let transaction of transactions) {
+    for (const transaction of transactions) {
         const complement = target - transaction.amount;
 
         if (seen[complement] !== undefined) {
