@@ -12,15 +12,17 @@ const PaymentDashboard: React.FC = () => {
     { id: 3, amount: 200 },
   ]);
   const [target, setTarget] = useState<number | null>(null);
-  const [newId, setNewId] = useState<number | null>(null);
-  const [newAmount, setNewAmount] = useState<number | null>(null);
   const [result, setResult] = useState<string>("");
+  const [newTransaction, setNewTransaction] = useState<{
+    id: number | null;
+    amount: number | null;
+  }>({ id: null, amount: null });
 
   const handleCheckTransactions = () => {
     if (target === null) return;
 
     const seen: Record<number, number> = {};
-    for (let transaction of transactions) {
+    for (const transaction of transactions) {
       const complement = target - transaction.amount;
       if (seen[complement] !== undefined) {
         setResult(
@@ -33,7 +35,17 @@ const PaymentDashboard: React.FC = () => {
     setResult("No matching transactions found.");
   };
 
-  const handleAddTransaction = (id: number | null, amount: number | null) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setNewTransaction((prev) => ({
+      ...prev,
+      [name]: value ? Number(value) : null, // Convert value to a number or null
+    }));
+  };
+
+  const handleAddTransaction = () => {
+    const { id, amount } = newTransaction;
+
     if (id === null || amount === null) {
       setResult("Please provide valid ID and amount.");
       return;
@@ -46,8 +58,10 @@ const PaymentDashboard: React.FC = () => {
       setResult("Transaction with this ID already exists.");
       return;
     }
+
     setTransactions([...transactions, { id, amount }]);
     setResult("Transaction added successfully.");
+    setNewTransaction({ id: null, amount: null }); // Reset form
   };
 
   const sum = useMemo(() => {
@@ -71,17 +85,19 @@ const PaymentDashboard: React.FC = () => {
         <li>
           <input
             type="number"
-            placeholder="Id"
-            onChange={(e) => setNewId(Number(e.target.value))}
+            name="id"
+            placeholder="Enter the Id"
+            value={newTransaction.id ?? ""}
+            onChange={handleInputChange}
           />
           <input
             type="number"
-            placeholder="Amount"
-            onChange={(e) => setNewAmount(Number(e.target.value))}
+            name="amount"
+            placeholder="Enter the Amount"
+            value={newTransaction.amount ?? ""}
+            onChange={handleInputChange}
           />
-          <button onClick={() => handleAddTransaction(newId, newAmount)}>
-            Add transaction
-          </button>
+          <button onClick={handleAddTransaction}>Add transaction</button>
         </li>
         <li>
           <p>Sum: {sum}</p>
