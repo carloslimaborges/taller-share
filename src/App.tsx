@@ -97,7 +97,16 @@ const PaymentDashboard: React.FC = () => {
             value={newTransaction.amount ?? ""}
             onChange={handleInputChange}
           />
-          <button onClick={handleAddTransaction}>Add transaction</button>
+          <button
+            onClick={handleAddTransaction}
+            disabled={
+              !newTransaction.id ||
+              !newTransaction.amount ||
+              newTransaction.amount < 0
+            }
+          >
+            Add transaction
+          </button>
         </li>
         <li>
           <p>Sum: {sum}</p>
