@@ -24,16 +24,18 @@ const PaymentDashboard: React.FC = () => {
   const handleCheckTransactions = () => {
     if (target === null) return;
 
-    // TODO: Improve from O(n^2) using the hashmap in line 21
-    for (let i = 0; i < transactions.length; i++) {
-      for (let j = i + 1; j < transactions.length; j++) {
-        if (transactions[i].amount + transactions[j].amount === target) {
-          setResult(`Transactions ${transactions[i].id} and ${transactions[j].id} add up to ${target}`);
-          return;
+    const seen: Record<number, number> = {};
+
+    for (let transaction of transactions) {
+        const complement = target - transaction.amount;
+
+        if (seen[complement] !== undefined) {
+            setResult(`Transactions ${seen[complement]} and ${transaction.id} add up to ${target}`);
+            return;
         }
-      }
+
+        seen[transaction.amount] = transaction.id;
     }
-    setResult('No matching transactions found.');
   };
 
   const handleAddNewTransaction = () => {
