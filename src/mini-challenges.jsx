@@ -44,8 +44,7 @@ const name = user.name;
 const age = user.age;
 
 //---> Add your solution here
-const { user } = props;
-const { name, age } = user;
+const { user: { name, age } } = props;
 
 // ------------------------------------
 // Identify issues and propose improvements
