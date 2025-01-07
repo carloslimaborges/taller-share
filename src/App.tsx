@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from "react";
 
 interface Transaction {
   id: number;
@@ -14,7 +14,7 @@ const PaymentDashboard: React.FC = () => {
   const [target, setTarget] = useState<number | null>(null);
   const [newId, setNewId] = useState<number | null>(null);
   const [newAmount, setNewAmount] = useState<number | null>(null);
-  const [result, setResult] = useState<string>('');
+  const [result, setResult] = useState<string>("");
 
   const handleCheckTransactions = () => {
     if (target === null) return;
@@ -57,10 +57,12 @@ const PaymentDashboard: React.FC = () => {
     setResult("Transaction added successfully.");
   };
 
-  let sum = 0;
-  for (const transaction of transactions) {
-    sum += transaction.amount;
-  }
+  const sum = useMemo(() => {
+    return transactions.reduce(
+      (total, transaction) => total + transaction.amount,
+      0
+    );
+  }, [transactions]);
 
   return (
     <div>
