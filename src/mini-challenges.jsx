@@ -61,11 +61,14 @@ function fetchData() {
 async function fetchData() {
     try {
         const res = await fetch('/api/data');
-        return res.json();
+        if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+        return await res.json();
     } catch (error) {
-        throw new Error(error.message);
+        console.error('Error fetching data:', error);
+        return null;
     }
 }
+
 
 // ------------------------------------
 // Analyze and optimize the following API response
@@ -79,7 +82,7 @@ const response = {
 //---> Add your solution here
 const response = {
     "data": [
-        { "id": 1, "actual_relevant_property_1": "value",  },
+        { "id": 1, "actual_relevant_property_1": "value", },
         ...
     ]
 }
@@ -115,10 +118,10 @@ app.post('/reset-password', async (req, res) => {
     if (!user) {
         error = true;
     }
-    if(!checkCurrentPassword(email, oldPassword)) {
+    if (!checkCurrentPassword(email, oldPassword)) {
         error = true;
     }
-    if(!error) {
+    if (!error) {
         user.password = newPassword;
         await saveUser(user);
         res.send('Password updated successfully');
