@@ -22,33 +22,43 @@ const PaymentDashboard: React.FC = () => {
     const seen: Record<number, number> = {};
 
     for (const transaction of transactions) {
-        const complement = target - transaction.amount;
+      const complement = target - transaction.amount;
 
-        if (seen[complement] !== undefined) {
-            setResult(`Transactions ${seen[complement]} and ${transaction.id} add up to ${target}`);
-            return;
-        }
+      if (seen[complement] !== undefined) {
+        setResult(`Transactions ${seen[complement]} and ${transaction.id} add up to ${target}`);
+        return;
+      }
 
-        seen[transaction.amount] = transaction.id;
+      seen[transaction.amount] = transaction.id;
     }
   };
 
   const handleAddNewTransaction = () => {
     handleAddTransaction(newId, newAmount);
-  }
+  };
 
-  const handleAddTransaction = (id: number, amount: number) => {
+  const handleAddTransaction = (id: number | null, amount: number | null) => {
+    if (id === null || amount === null) {
+      setResult("Please provide valid ID and amount.");
+      return;
+    }
+
     if (amount < 0) {
+      setResult("Amount cannot be negative.");
       return;
     }
-    if (transactions.find(transaction => transaction.id === id)) {
+
+    if (transactions.some((transaction) => transaction.id === id)) {
+      setResult("Transaction with this ID already exists.");
       return;
     }
+
     setTransactions([...transactions, { id, amount }]);
+    setResult("Transaction added successfully.");
   };
 
   let sum = 0;
-  for (let transaction of transactions) {
+  for (const transaction of transactions) {
     sum += transaction.amount;
   }
 
@@ -76,7 +86,9 @@ const PaymentDashboard: React.FC = () => {
           />
           <button onClick={handleAddNewTransaction}>Add transaction</button>
         </li>
-        <li><p>Sum: {sum}</p></li>
+        <li>
+          <p>Sum: {sum}</p>
+        </li>
         <li>
           <input
             type="number"
