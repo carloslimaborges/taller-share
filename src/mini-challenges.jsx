@@ -5,7 +5,9 @@ function App({ count }) {
 }
 
 //---> Add your solution here
-
+const App = React.memo(({ count }) => {
+    return <div>{count}</div>;
+});
 
 // ------------------------------------
 // Refactor this class component into a functional component using hooks
